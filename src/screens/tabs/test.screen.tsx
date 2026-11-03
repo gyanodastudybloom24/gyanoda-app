@@ -5,46 +5,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Header } from '@/components/ui';
 import { BottomTabInset, Fonts, MaxContentWidth, Rounded, Spacing } from '@/constants/theme';
+import { TESTS } from '@/data';
 import { useTheme } from '@/hooks/use-theme';
+import type { TestItem } from '@/types';
 import type { MainTabScreenProps } from '@/types/navigation';
 
 export type TestScreenProps = MainTabScreenProps<'Test'>;
-
-interface TestItem {
-  id: string;
-  title: string;
-  subject: string;
-  questions: number;
-  durationMins: number;
-  status: 'Available' | 'Completed' | 'Upcoming';
-}
-
-const TESTS: TestItem[] = [
-  {
-    id: 'test-1',
-    title: 'Mechanics & Laws of Motion Quiz',
-    subject: 'Physics',
-    questions: 25,
-    durationMins: 45,
-    status: 'Available',
-  },
-  {
-    id: 'test-2',
-    title: 'Organic Chemistry Mock Exam 1',
-    subject: 'Chemistry',
-    questions: 30,
-    durationMins: 60,
-    status: 'Available',
-  },
-  {
-    id: 'test-3',
-    title: 'Calculus Benchmark Assessment',
-    subject: 'Mathematics',
-    questions: 20,
-    durationMins: 50,
-    status: 'Completed',
-  },
-];
+export type { TestItem };
+export { TESTS };
 
 export function TestScreen({ navigation: _navigation }: TestScreenProps) {
   const theme = useTheme();

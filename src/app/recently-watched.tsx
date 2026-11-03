@@ -1,4 +1,4 @@
-import { RecentlyWatchedScreen } from '@/screens/recently-watched.screen';
+import { RecentlyWatchedScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function RecentlyWatched(props: RootStackScreenProps<'RecentlyWatched'>) {

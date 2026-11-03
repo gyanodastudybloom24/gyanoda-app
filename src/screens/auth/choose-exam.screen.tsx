@@ -17,52 +17,14 @@ import { ThemedView } from '@/components/themed-view';
 import { Button, FocusAwareStatusBar } from '@/components/ui';
 import { Fonts, MaxContentWidth, Rounded, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { EXAM_OPTIONS } from '@/data';
 import { authService } from '@/services';
+import type { ExamCardConfig, ExamType } from '@/types';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export type ChooseExamScreenProps = RootStackScreenProps<'ChooseExam'>;
-
-export type ExamType = 'WBJEE' | 'NEET';
-
-interface ExamCardConfig {
-  id: ExamType;
-  title: string;
-  subtitle: string;
-  badge: string;
-  icon: 'Rocket' | 'Stethoscope';
-  primaryColor: string;
-  midColor: string;
-  fadeColor: string;
-  titleColor: string;
-  subtitleColor: string;
-}
-
-const EXAM_OPTIONS: ExamCardConfig[] = [
-  {
-    id: 'WBJEE',
-    title: 'WBJEE',
-    subtitle: 'Engineering & Tech',
-    badge: 'PCM Track',
-    icon: 'Rocket',
-    primaryColor: '#0284c7', // Vibrant Deep Cerulean / Cyan
-    midColor: '#38bdf8',
-    fadeColor: '#e0f2fe',
-    titleColor: '#075985',
-    subtitleColor: 'rgba(7, 89, 133, 0.78)',
-  },
-  {
-    id: 'NEET',
-    title: 'NEET',
-    subtitle: 'Medical Entrance',
-    badge: 'PCB Track',
-    icon: 'Stethoscope',
-    primaryColor: '#e11d48', // Vivid Coral Rose / Crimson
-    midColor: '#fb7185',
-    fadeColor: '#ffe4e6',
-    titleColor: '#881337',
-    subtitleColor: 'rgba(136, 19, 55, 0.78)',
-  },
-];
+export type { ExamType, ExamCardConfig };
+export { EXAM_OPTIONS };
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

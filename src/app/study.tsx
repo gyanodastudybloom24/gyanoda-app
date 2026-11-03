@@ -1,4 +1,4 @@
-import { StudyScreen } from '@/screens/study.screen';
+import { StudyScreen } from '@/screens';
 import type { MainTabScreenProps } from '@/types/navigation';
 
 export function Study(props: MainTabScreenProps<'Study'>) {

@@ -1,4 +1,4 @@
-import { SettingsScreen } from '@/screens/settings.screen';
+import { SettingsScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function Settings(props: RootStackScreenProps<'Settings'>) {

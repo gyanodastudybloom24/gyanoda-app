@@ -1,4 +1,4 @@
-import { ProfileScreen } from '@/screens/profile.screen';
+import { ProfileScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function Profile(props: RootStackScreenProps<'Profile'>) {

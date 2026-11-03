@@ -6,3 +6,4 @@ export * from './alert';
 export * from './header';
 export * from './focus-aware-status-bar';
 export * from './membership-badge';
+export * from './rating-star';

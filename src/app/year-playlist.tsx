@@ -1,4 +1,4 @@
-import { YearPlaylistScreen } from '@/screens/year-playlist.screen';
+import { YearPlaylistScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function YearPlaylist(props: RootStackScreenProps<'YearPlaylist'>) {

@@ -1,4 +1,4 @@
-import { ChapterPlaylistScreen } from '@/screens/chapter-playlist.screen';
+import { ChapterPlaylistScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function ChapterPlaylist(props: RootStackScreenProps<'ChapterPlaylist'>) {

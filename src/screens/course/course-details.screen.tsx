@@ -1,87 +1,28 @@
-import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useMemo, useState } from 'react';
 import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { FlatList, LayoutAnimation, Platform, Pressable, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SolarIcon } from '@/components/icons';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { customAlert } from '@/components/ui';
+import { RatingStar, customAlert } from '@/components/ui';
 import { Fonts, MaxContentWidth, Palette, Rounded, Spacing } from '@/constants/theme';
-import { coursesData, defaultCourseInclusions } from '@/data';
+import { coursesData, defaultCourseInclusions, defaultCourseReviewItems, defaultVideoYearItems } from '@/data';
+import { CourseMediaContainer } from '@/features/courses';
 import { useEnrolledCourses } from '@/hooks/use-enrolled-courses';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useTheme } from '@/hooks/use-theme';
 import { enrollmentService } from '@/services';
+import type { CourseFilter, CourseReviewItem, VideoYearItem } from '@/types';
 import type { RootStackScreenProps } from '@/types/navigation';
 import { triggerHaptic } from '@/utils';
 
 export type CourseDetailsScreenProps = RootStackScreenProps<'CourseDetails'>;
-
-export type CourseFilter = 'overview' | 'videos' | 'review';
-
-export interface VideoYearItem {
-  id: string;
-  year: string;
-  description: string;
-  duration: string;
-}
-
-export const defaultVideoYearItems: VideoYearItem[] = [
-  { id: 'vy-2024', year: '2024', description: 'Previous years question', duration: '2.5 hrs' },
-  { id: 'vy-2025', year: '2025', description: 'Previous years question', duration: '3.0 hrs' },
-  { id: 'vy-2026', year: '2026', description: 'Previous years question', duration: '2.8 hrs' },
-  { id: 'vy-2027', year: '2027', description: 'Previous years question', duration: '3.2 hrs' },
-  { id: 'vy-2028', year: '2028', description: 'Previous years question', duration: '1.9 hrs' },
-  { id: 'vy-2029', year: '2029', description: 'Previous years question', duration: '2.4 hrs' },
-  { id: 'vy-2030', year: '2030', description: 'Previous years question', duration: '3.1 hrs' },
-  { id: 'vy-2031', year: '2031', description: 'Previous years question', duration: '2.7 hrs' },
-];
-
-export interface CourseReviewItem {
-  id: string;
-  name: string;
-  rating: number;
-  date: string;
-  comment: string;
-}
-
-export function RatingStar({
-  filled = true,
-  size = 16,
-  color = Palette.accent,
-}: {
-  filled?: boolean;
-  size?: number;
-  color?: string;
-}) {
-  return (
-    <Svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill={filled ? color : 'none'}>
-      <Path
-        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-        fill={filled ? color : 'none'}
-        stroke={color}
-        strokeWidth={filled ? 0 : 2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-}
-
-export const defaultCourseReviews: CourseReviewItem[] = [
-  { id: 'r1', name: 'Aarav Sharma', rating: 5, date: '2 days ago', comment: 'Extremely well structured PYQ solutions. Cleared all my conceptual doubts!' },
-  { id: 'r2', name: 'Priya Patel', rating: 5, date: '1 week ago', comment: 'The video explanations for past 10 years papers are the best on this platform.' },
-  { id: 'r3', name: 'Rohan Sen', rating: 4, date: '2 weeks ago', comment: 'Great depth in problem-solving techniques and formula shortcuts.' },
-];
+export type { CourseFilter, VideoYearItem, CourseReviewItem };
+export { RatingStar, CourseMediaContainer, defaultVideoYearItems, defaultCourseReviewItems };
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -90,30 +31,6 @@ const filterTabs: { id: CourseFilter; label: string }[] = [
   { id: 'videos', label: 'Videos' },
   { id: 'review', label: 'Review' },
 ];
-
-export type CourseMediaContainerProps = {
-  imageUrl: string;
-  videoUrl?: string;
-};
-
-/**
- * CourseMediaContainer
- * 16:12 ratio media container placed at the top of the Course Details screen.
- * Currently displays the preview image, structured to seamlessly drop in a video player.
- */
-export function CourseMediaContainer({ imageUrl, videoUrl: _videoUrl }: CourseMediaContainerProps) {
-  return (
-    <View style={styles.mediaContainer}>
-      {/* Media slot: currently renders course image preview, ready for video player */}
-      <Image
-        source={{ uri: imageUrl }}
-        style={styles.mediaImage}
-        contentFit="cover"
-        transition={300}
-      />
-    </View>
-  );
-}
 
 export function CourseDetailsScreen({
   route,
@@ -132,18 +49,15 @@ export function CourseDetailsScreen({
 
   useEffect(() => {
     if (isMenuOpen) {
-      menuAnim.value = withSpring(1, { damping: 16, stiffness: 220 });
+      menuAnim.value = withTiming(1, { duration: 150 });
     } else {
-      menuAnim.value = 0;
+      menuAnim.value = withTiming(0, { duration: 100 });
     }
   }, [isMenuOpen, menuAnim]);
 
   const animatedMenuStyle = useAnimatedStyle(() => ({
     opacity: menuAnim.value,
-    transform: [
-      { translateY: (1 - menuAnim.value) * -8 },
-      { scale: 0.88 + menuAnim.value * 0.12 },
-    ],
+    transform: [{ translateY: (1 - menuAnim.value) * -4 }],
   }));
 
   // Resolve current course data or fallback to the first course
@@ -166,7 +80,7 @@ export function CourseDetailsScreen({
   const isEnrolled = enrolledCourses.some((c) => c.id === course.id) || Boolean(course.isEnrolled);
 
   // Review states: student can give stars (1-5) and write feedback, enabled if enrolled
-  const [reviewsList, setReviewsList] = useState<CourseReviewItem[]>(defaultCourseReviews);
+  const [reviewsList, setReviewsList] = useState<CourseReviewItem[]>(defaultCourseReviewItems);
   const [newRating, setNewRating] = useState<number>(5);
   const [newComment, setNewComment] = useState<string>('');
 
@@ -758,7 +672,7 @@ export function CourseDetailsScreen({
                 </ThemedText>
               </View>
               <ThemedText themeColor="textSecondary" style={styles.reviewsCount}>
-                {`Based on ${1420 + (reviewsList.length - defaultCourseReviews.length)} student ratings`}
+                {`Based on ${1420 + (reviewsList.length - defaultCourseReviewItems.length)} student ratings`}
               </ThemedText>
             </View>
 
@@ -1178,7 +1092,7 @@ const styles = StyleSheet.create({
   popupMenu: {
     position: 'absolute',
     right: Spacing.four,
-    minWidth: 130,
+    minWidth: 104,
     borderRadius: Rounded.md,
     borderWidth: 1,
     paddingVertical: 4,
@@ -1198,8 +1112,8 @@ const styles = StyleSheet.create({
   popupItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.one + Spacing.half,
-    paddingHorizontal: Spacing.two,
+    gap: 8,
+    paddingHorizontal: 12,
     paddingVertical: 8,
   },
   popupText: {

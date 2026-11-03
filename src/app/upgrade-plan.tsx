@@ -1,4 +1,4 @@
-import { UpgradePlanScreen } from '@/screens/upgrade-plan.screen';
+import { UpgradePlanScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function UpgradePlan(props: RootStackScreenProps<'UpgradePlan'>) {

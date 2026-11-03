@@ -1,4 +1,4 @@
-import { OnboardingFlowScreen } from '@/screens/onboarding-flow.screen';
+import { OnboardingFlowScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function OnboardingFlow(props: RootStackScreenProps<'OnboardingFlow'>) {

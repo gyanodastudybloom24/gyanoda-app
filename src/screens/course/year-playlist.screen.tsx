@@ -22,120 +22,28 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { customAlert } from '@/components/ui';
 import { Fonts, MaxContentWidth, Palette, Rounded, Spacing } from '@/constants/theme';
+import {
+  DEFAULT_SAMPLE_VIDEO,
+  defaultChemistryChapters,
+  defaultMathChapters,
+  defaultPhysicsChapters,
+} from '@/data';
 import { useTheme } from '@/hooks/use-theme';
+import type { YearChapterItem } from '@/types';
 import type { PlayerPlaylistItem, RootStackScreenProps } from '@/types/navigation';
 
-export type ChapterPlaylistScreenProps = RootStackScreenProps<'ChapterPlaylist'>;
+export type YearPlaylistScreenProps = RootStackScreenProps<'YearPlaylist'>;
+export type { YearChapterItem };
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const DEFAULT_SAMPLE_VIDEO = 'https://vjs.zencdn.net/v/oceans.mp4';
-
-export interface ChapterYearItem {
-  id: string;
-  year: string;
-  title: string;
-  subtitle: string;
-  duration: string;
-  thumbnailUrl: string;
-  questionsCount: number;
-  questionText: string;
-  answerText: string;
+interface ChapterRowItemProps {
+  item: YearChapterItem;
+  onPress: (item: YearChapterItem) => void;
+  onMorePress: (item: YearChapterItem) => void;
 }
 
-// Generate realistic year-wise examination breakdown for any chapter
-function getChapterYears(chapterNumber: string, chapterTitle: string): ChapterYearItem[] {
-  const yearsData = [
-    {
-      year: '2024',
-      duration: '24:15',
-      questionsCount: 4,
-      subtitle: 'Dimensional analysis, vernier precision & error formulas',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-      year: '2023',
-      duration: '28:30',
-      questionsCount: 5,
-      subtitle: 'Calculus-based derivations, vector methods & speed shortcuts',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-      year: '2022',
-      duration: '22:45',
-      questionsCount: 4,
-      subtitle: 'Graphical analysis, boundary value proofs & exam patterns',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-      year: '2021',
-      duration: '31:20',
-      questionsCount: 6,
-      subtitle: 'High-frequency question drills & step-by-step paper review',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-      year: '2020',
-      duration: '25:10',
-      questionsCount: 5,
-      subtitle: 'Standard approximations, error bounds & analytical methods',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-      year: '2019',
-      duration: '19:40',
-      questionsCount: 4,
-      subtitle: 'Free body balance, conservation laws & calculation tricks',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-      year: '2018',
-      duration: '27:50',
-      questionsCount: 5,
-      subtitle: 'Past paper walkthrough with rigorous theoretical explanations',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-      year: '2017',
-      duration: '23:15',
-      questionsCount: 4,
-      subtitle: 'Core principles, formula applications & numerical problem sets',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop',
-    },
-    {
-      year: '2016',
-      duration: '26:30',
-      questionsCount: 5,
-      subtitle: 'Foundational past questions & comprehensive problem solutions',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=800&auto=format&fit=crop',
-    },
-  ];
-
-  return yearsData.map((item) => ({
-    id: `ch-${chapterNumber}-yr-${item.year}`,
-    year: item.year,
-    title: `${item.year} Examination Solutions`,
-    subtitle: item.subtitle,
-    duration: item.duration,
-    thumbnailUrl: item.thumbnailUrl,
-    questionsCount: item.questionsCount,
-    questionText: `[${item.year} Examination] Chapter ${chapterNumber} (${chapterTitle}): Evaluate the high-yield problems on key principles, numerical calculations, and error bounds for year ${item.year}.`,
-    answerText: `Step-by-step Solution for ${item.year} Examination:\n\n1. Formula and Core Relations:\n   Recall standard derivations and foundational formulas for ${chapterTitle}.\n\n2. Detailed Step Calculation:\n   Substitute values from examination problem statement.\n   Compute limits, dimensional powers, or equilibrium force balance.\n\n3. Verification & Key Conclusion:\n   Confirm units, order of magnitude, and sign conventions. Matches examination answer key.`,
-  }));
-}
-
-interface YearRowItemProps {
-  item: ChapterYearItem;
-  chapterNumber: string;
-  onPress: (item: ChapterYearItem) => void;
-  onMorePress: (item: ChapterYearItem) => void;
-}
-
-function YearRowItem({
-  item,
-  onPress,
-  onMorePress,
-}: YearRowItemProps) {
+function ChapterRowItem({ item, onPress, onMorePress }: ChapterRowItemProps) {
   const theme = useTheme();
   const scale = useSharedValue(1);
 
@@ -154,7 +62,7 @@ function YearRowItem({
   return (
     <AnimatedPressable
       accessibilityRole="button"
-      accessibilityLabel={`Year ${item.year}: ${item.title}`}
+      accessibilityLabel={`Chapter ${item.chapterNumber}: ${item.title}`}
       onPress={() => onPress(item)}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
@@ -189,11 +97,11 @@ function YearRowItem({
         </View>
       </View>
 
-      {/* Year Information */}
+      {/* Chapter Information */}
       <View style={styles.chapterTextContent}>
         <View style={styles.chapterHeaderLine}>
           <Text style={[styles.chapterIndexBadge, { color: Palette.brand.primary }]}>
-            {`YEAR ${item.year}`}
+            {`CH ${item.chapterNumber}`}
           </Text>
           <Text style={[styles.questionsCountText, { color: theme.textSecondary }]}>
             {`${item.questionsCount} PYQs`}
@@ -225,35 +133,37 @@ function YearRowItem({
   );
 }
 
-export function ChapterPlaylistScreen({
+export function YearPlaylistScreen({
   route,
   navigation,
-}: ChapterPlaylistScreenProps) {
+}: YearPlaylistScreenProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
-  const chapterNumber = route.params?.chapterNumber ?? '01';
+  const year = route.params?.year ?? '2024';
   const subjectId = (route.params?.subjectId ?? 'physics').toLowerCase();
-  const title = route.params?.title ?? `Chapter ${chapterNumber} Solutions`;
+  const title = route.params?.title ?? `${year} PYQ Solutions`;
   const description =
     route.params?.description ??
-    `Comprehensive year-wise previous year question walkthroughs with step-by-step solutions for Chapter ${chapterNumber}: ${title}.`;
+    `Comprehensive chapter-wise previous year question walkthroughs with step-by-step solutions for ${year}.`;
   const imageUrl =
     route.params?.imageUrl ??
     'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1200&auto=format&fit=crop';
 
   const [isSaved, setIsSaved] = useState(false);
 
-  // Generate the year list containing this specific chapter's solutions
-  const chapterYears = useMemo(() => {
-    return getChapterYears(chapterNumber, title);
-  }, [chapterNumber, title]);
+  // Select chapter playlist dataset matching the subject
+  const chapters = useMemo(() => {
+    if (subjectId.includes('chem')) return defaultChemistryChapters;
+    if (subjectId.includes('math')) return defaultMathChapters;
+    return defaultPhysicsChapters;
+  }, [subjectId]);
 
   const handleSharePress = async () => {
     try {
       await Share.share({
         title: `${title} Playlist`,
-        message: `Watch Chapter ${chapterNumber} (${title}) Year-wise solutions on Gyanoda!`,
+        message: `Watch ${title} - ${description} on Gyanoda!`,
       });
     } catch {
       // User dismissed share
@@ -261,26 +171,25 @@ export function ChapterPlaylistScreen({
   };
 
   const playerPlaylist: PlayerPlaylistItem[] = useMemo(() => {
-    return chapterYears.map((y) => ({
-      id: y.id,
-      chapterNumber,
-      year: y.year,
-      title: y.title,
-      subtitle: `CH ${chapterNumber} • ${y.subtitle}`,
-      duration: y.duration,
-      thumbnailUrl: y.thumbnailUrl,
+    return chapters.map((c) => ({
+      id: c.id,
+      chapterNumber: c.chapterNumber,
+      title: c.title,
+      subtitle: c.subtitle,
+      duration: c.duration,
+      thumbnailUrl: c.thumbnailUrl ?? 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop',
       videoUrl: DEFAULT_SAMPLE_VIDEO,
-      questionText: y.questionText,
-      answerText: y.answerText,
+      questionText: `Chapter ${c.chapterNumber}: ${c.title}. Focus on ${c.subtitle}. Solve previous year questions step by step.`,
+      answerText: `Key Concepts & Derivations:\n\n1. Foundational Theory for ${c.title}:\n   Review core equations and conceptual fundamentals.\n\n2. Analytical Steps:\n   Follow step-by-step mathematical reasoning demonstrated in the player above.\n\n3. High-Yield Examination Tips:\n   Common error patterns and time-saving calculation shortcuts.`,
     }));
-  }, [chapterYears, chapterNumber]);
+  }, [chapters]);
 
   const handlePlayAll = () => {
     navigation.navigate('Player', {
       videoId: playerPlaylist[0]?.id,
       initialIndex: 0,
       playlist: playerPlaylist,
-      year: chapterYears[0]?.year,
+      year,
       subjectId,
       title: playerPlaylist[0]?.title,
     });
@@ -288,12 +197,11 @@ export function ChapterPlaylistScreen({
 
   const handleShuffle = () => {
     const shuffled = [...playerPlaylist].sort(() => Math.random() - 0.5);
-    const firstYear = chapterYears.find((cy) => cy.id === shuffled[0]?.id)?.year;
     navigation.navigate('Player', {
       videoId: shuffled[0]?.id,
       initialIndex: 0,
       playlist: shuffled,
-      year: firstYear,
+      year,
       subjectId,
       title: shuffled[0]?.title,
     });
@@ -311,28 +219,28 @@ export function ChapterPlaylistScreen({
     });
   };
 
-  const handleYearPress = (item: ChapterYearItem, index: number) => {
+  const handleChapterPress = (item: YearChapterItem, index: number) => {
     navigation.navigate('Player', {
       videoId: item.id,
       initialIndex: index,
       playlist: playerPlaylist,
-      year: item.year,
+      year,
       subjectId,
       title: item.title,
     });
   };
 
-  const handleYearMore = (item: ChapterYearItem, index: number) => {
+  const handleChapterMore = (item: YearChapterItem, index: number) => {
     customAlert.show({
-      title: `${item.year} Solutions`,
-      message: `Chapter ${chapterNumber}: ${title}\nYear ${item.year} • ${item.duration} • ${item.questionsCount} Questions.\n\n${item.subtitle}`,
+      title: item.title,
+      message: `Chapter ${item.chapterNumber} • ${item.duration} • ${item.questionsCount} Questions.\n\nKey topics: ${item.subtitle}`,
       type: 'confirm',
       buttons: [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Play Video',
           style: 'primary',
-          onPress: () => handleYearPress(item, index),
+          onPress: () => handleChapterPress(item, index),
         },
       ],
     });
@@ -341,7 +249,7 @@ export function ChapterPlaylistScreen({
   return (
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <FlatList
-        data={chapterYears}
+        data={chapters}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
@@ -373,7 +281,7 @@ export function ChapterPlaylistScreen({
                   pointerEvents="none"
                 />
 
-                {/* Banner Content: Subject Pill, Chapter Title, Description */}
+                {/* Banner Content: Subject Pill, Title, Description */}
                 <View style={styles.bannerContent}>
                   <View style={styles.subjectPill}>
                     <SolarIcon
@@ -383,7 +291,7 @@ export function ChapterPlaylistScreen({
                       color="#ffffff"
                     />
                     <Text style={styles.subjectPillText}>
-                      {`${subjectId.toUpperCase()} • CHAPTER ${chapterNumber}`}
+                      {`${subjectId.toUpperCase()} • ${year}`}
                     </Text>
                   </View>
 
@@ -401,7 +309,7 @@ export function ChapterPlaylistScreen({
                   {/* Circular Shuffle Button */}
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Shuffle all years"
+                    accessibilityLabel="Shuffle all videos"
                     onPress={handleShuffle}
                     style={({ pressed }) => [
                       styles.bannerShuffleButton,
@@ -418,7 +326,7 @@ export function ChapterPlaylistScreen({
                   {/* Circular Orange Play All Button (plays 1st video one by one) */}
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Play all year solutions from 1st video"
+                    accessibilityLabel="Play all videos from 1st video"
                     onPress={handlePlayAll}
                     style={({ pressed }) => [
                       styles.bannerPlayButton,
@@ -492,10 +400,10 @@ export function ChapterPlaylistScreen({
               </View>
             </View>
 
-            {/* Padded Years Header Row */}
+            {/* Padded Chapters Header Row (No blue/white play buttons) */}
             <View style={styles.sectionHeaderRow}>
               <View style={styles.sectionHeaderLeft}>
-                <ThemedText style={styles.sectionTitle}>Years</ThemedText>
+                <ThemedText style={styles.sectionTitle}>Chapters</ThemedText>
                 <View
                   style={[
                     styles.countBadge,
@@ -506,7 +414,7 @@ export function ChapterPlaylistScreen({
                       styles.countBadgeText,
                       { color: theme.textSecondary },
                     ]}>
-                    {`${chapterYears.length} Videos`}
+                    {`${chapters.length} Videos`}
                   </Text>
                 </View>
               </View>
@@ -516,17 +424,16 @@ export function ChapterPlaylistScreen({
                   styles.totalDurationText,
                   { color: theme.textSecondary },
                 ]}>
-                Year-wise PYQ Solutions
+                Past Paper PYQ Solutions
               </Text>
             </View>
           </View>
         }
         renderItem={({ item, index }) => (
-          <YearRowItem
+          <ChapterRowItem
             item={item}
-            chapterNumber={chapterNumber}
-            onPress={() => handleYearPress(item, index)}
-            onMorePress={() => handleYearMore(item, index)}
+            onPress={() => handleChapterPress(item, index)}
+            onMorePress={() => handleChapterMore(item, index)}
           />
         )}
       />
@@ -839,3 +746,4 @@ const styles = StyleSheet.create({
     opacity: 0.75,
   },
 });
+

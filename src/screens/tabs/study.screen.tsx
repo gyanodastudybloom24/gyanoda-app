@@ -5,42 +5,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Header } from '@/components/ui';
 import { BottomTabInset, Fonts, MaxContentWidth, Rounded, Spacing } from '@/constants/theme';
+import { STUDY_RESOURCES } from '@/data';
 import { useTheme } from '@/hooks/use-theme';
+import type { StudyResource } from '@/types';
 import type { MainTabScreenProps } from '@/types/navigation';
 
 export type StudyScreenProps = MainTabScreenProps<'Study'>;
-
-interface StudyResource {
-  id: string;
-  title: string;
-  description: string;
-  type: string;
-  icon: string;
-}
-
-const STUDY_RESOURCES: StudyResource[] = [
-  {
-    id: 'res-1',
-    title: 'Formula & Equation Handbook',
-    description: 'Quick-reference equations for Physics & Physical Chemistry',
-    type: 'Handbook',
-    icon: 'NotebookBookmark',
-  },
-  {
-    id: 'res-2',
-    title: 'High-Yield Revision Flashcards',
-    description: 'Definitions, laws, and key constants for quick review',
-    type: 'Flashcards',
-    icon: 'CardSearch',
-  },
-  {
-    id: 'res-3',
-    title: 'Solved Exemplar Problems',
-    description: 'Step-by-step verified solutions for advanced conceptual problems',
-    type: 'Solutions',
-    icon: 'DiplomaVerified',
-  },
-];
+export type { StudyResource };
+export { STUDY_RESOURCES };
 
 export function StudyScreen({ navigation: _navigation }: StudyScreenProps) {
   const theme = useTheme();

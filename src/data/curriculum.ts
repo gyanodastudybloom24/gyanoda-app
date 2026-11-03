@@ -1,4 +1,4 @@
-import type { FilterOption, SyllabusModule } from '@/types';
+import type { FilterOption, StudyResource, SyllabusModule, TestItem } from '@/types';
 
 export const filterSubjects: FilterOption[] = [
   { id: 'all', label: 'All Subjects' },
@@ -80,3 +80,70 @@ export const initialSyllabusModules: SyllabusModule[] = [
     textColor: '#29431e',
   },
 ];
+
+export const STUDY_RESOURCES: StudyResource[] = [
+  {
+    id: 'res-1',
+    title: 'Formula & Equation Handbook',
+    description: 'Quick-reference equations for Physics & Physical Chemistry',
+    type: 'Handbook',
+    icon: 'NotebookBookmark',
+  },
+  {
+    id: 'res-2',
+    title: 'High-Yield Revision Flashcards',
+    description: 'Definitions, laws, and key constants for quick review',
+    type: 'Flashcards',
+    icon: 'CardSearch',
+  },
+  {
+    id: 'res-3',
+    title: 'Solved Exemplar Problems',
+    description: 'Step-by-step verified solutions for advanced conceptual problems',
+    type: 'Solutions',
+    icon: 'CheckSquare',
+  },
+  {
+    id: 'res-4',
+    title: 'Previous Years Analysis Report',
+    description: 'Weightage trends and high-frequency topics from 2015-2024',
+    type: 'Analysis',
+    icon: 'Chart2',
+  },
+];
+
+export const TESTS: TestItem[] = [
+  {
+    id: 'test-1',
+    title: 'Mechanics & Laws of Motion Quiz',
+    subject: 'Physics',
+    questions: 25,
+    durationMins: 45,
+    status: 'Available',
+  },
+  {
+    id: 'test-2',
+    title: 'Organic Chemistry Mock Exam 1',
+    subject: 'Chemistry',
+    questions: 30,
+    durationMins: 60,
+    status: 'Available',
+  },
+  {
+    id: 'test-3',
+    title: 'Calculus & Integration Full Test',
+    subject: 'Mathematics',
+    questions: 30,
+    durationMins: 60,
+    status: 'Available',
+  },
+  {
+    id: 'test-4',
+    title: 'WBJEE Full Syllabus Mock 2024',
+    subject: 'All Subjects',
+    questions: 100,
+    durationMins: 180,
+    status: 'Upcoming',
+  },
+];
+

@@ -1,4 +1,4 @@
-import { ExploreScreen } from '@/screens/explore.screen';
+import { ExploreScreen } from '@/screens';
 import type { MainTabScreenProps } from '@/types/navigation';
 
 export function Explore(props: MainTabScreenProps<'Explore'>) {

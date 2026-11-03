@@ -10,6 +10,7 @@ import { BottomTabInset, Fonts, MaxContentWidth, Palette, Rounded, Spacing } fro
 import { walletData } from '@/data';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useTheme } from '@/hooks/use-theme';
+import type { TransactionFilter } from '@/types';
 import type { RootStackScreenProps } from '@/types/navigation';
 import type { WalletTransaction } from '@/types/wallet';
 import { triggerHaptic } from '@/utils';
@@ -18,7 +19,7 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export type WalletScreenProps = RootStackScreenProps<'Wallet'>;
 
-type TransactionFilter = 'All' | 'Credited' | 'Spent';
+export type { TransactionFilter };
 
 export function WalletScreen({ navigation }: WalletScreenProps) {
   const theme = useTheme();

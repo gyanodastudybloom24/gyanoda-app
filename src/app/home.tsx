@@ -1,4 +1,4 @@
-import { HomeScreen } from '@/screens/home.screen';
+import { HomeScreen } from '@/screens';
 import type { MainTabScreenProps } from '@/types/navigation';
 
 export function Home(props: MainTabScreenProps<'Home'>) {

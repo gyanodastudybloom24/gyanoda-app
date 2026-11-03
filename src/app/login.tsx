@@ -1,4 +1,4 @@
-import { LoginScreen } from '@/screens/login.screen';
+import { LoginScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function Login(props: RootStackScreenProps<'Login'>) {

@@ -1,4 +1,5 @@
 export type TransactionType = 'credit' | 'debit';
+export type TransactionFilter = 'All' | 'Credited' | 'Spent';
 
 export interface WalletTransaction {
   id: string;

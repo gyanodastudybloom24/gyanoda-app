@@ -1,4 +1,4 @@
-import { PlayerScreen } from '@/screens/player.screen';
+import { PlayerScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function Player(props: RootStackScreenProps<'Player'>) {

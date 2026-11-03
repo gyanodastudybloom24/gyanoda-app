@@ -1,4 +1,4 @@
-import { CourseDetailsScreen } from '@/screens/course-details.screen';
+import { CourseDetailsScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function CourseDetails(props: RootStackScreenProps<'CourseDetails'>) {

@@ -22,3 +22,20 @@ export interface SyllabusModule {
   backgroundColor?: string;
   textColor?: string;
 }
+
+export interface StudyResource {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  icon: string;
+}
+
+export interface TestItem {
+  id: string;
+  title: string;
+  subject: string;
+  questions: number;
+  durationMins: number;
+  status: 'Available' | 'Completed' | 'Upcoming';
+}

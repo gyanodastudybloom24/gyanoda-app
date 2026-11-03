@@ -1,4 +1,4 @@
-import { CourseAccessScreen } from '@/screens/course-access.screen';
+import { CourseAccessScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function CourseAccess(props: RootStackScreenProps<'CourseAccess'>) {

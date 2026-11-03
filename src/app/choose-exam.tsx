@@ -1,4 +1,4 @@
-import { ChooseExamScreen } from '@/screens/choose-exam.screen';
+import { ChooseExamScreen } from '@/screens';
 import type { RootStackScreenProps } from '@/types/navigation';
 
 export function ChooseExam(props: RootStackScreenProps<'ChooseExam'>) {

@@ -1,1 +1,1 @@
-export * from '@/screens/explore.screen';
+export * from '@/screens/tabs/explore.screen';

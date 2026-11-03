@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SolarIcon } from '@/components/icons';
@@ -25,18 +25,15 @@ export function ProfileScreen({ navigation }: ProfileScreenProps) {
 
   useEffect(() => {
     if (isMenuOpen) {
-      menuAnim.value = withSpring(1, { damping: 16, stiffness: 220 });
+      menuAnim.value = withTiming(1, { duration: 150 });
     } else {
-      menuAnim.value = 0;
+      menuAnim.value = withTiming(0, { duration: 100 });
     }
   }, [isMenuOpen, menuAnim]);
 
   const animatedMenuStyle = useAnimatedStyle(() => ({
     opacity: menuAnim.value,
-    transform: [
-      { translateY: (1 - menuAnim.value) * -8 },
-      { scale: 0.88 + menuAnim.value * 0.12 },
-    ],
+    transform: [{ translateY: (1 - menuAnim.value) * -4 }],
   }));
 
   const handleEditPress = () => {
@@ -517,7 +514,7 @@ const styles = StyleSheet.create({
   popupMenu: {
     position: 'absolute',
     right: Spacing.four,
-    minWidth: 124,
+    minWidth: 104,
     borderRadius: Rounded.md,
     borderWidth: 1,
     paddingVertical: 4,
@@ -531,9 +528,9 @@ const styles = StyleSheet.create({
   popupItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.one + Spacing.half,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: 7,
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   popupText: {
     fontFamily: Fonts?.sans,

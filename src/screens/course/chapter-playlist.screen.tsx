@@ -22,233 +22,30 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { customAlert } from '@/components/ui';
 import { Fonts, MaxContentWidth, Palette, Rounded, Spacing } from '@/constants/theme';
+import { DEFAULT_SAMPLE_VIDEO, getChapterYears } from '@/data';
 import { useTheme } from '@/hooks/use-theme';
+import type { ChapterYearItem } from '@/types';
 import type { PlayerPlaylistItem, RootStackScreenProps } from '@/types/navigation';
 
-export type YearPlaylistScreenProps = RootStackScreenProps<'YearPlaylist'>;
+export type ChapterPlaylistScreenProps = RootStackScreenProps<'ChapterPlaylist'>;
+export type { ChapterYearItem };
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const DEFAULT_SAMPLE_VIDEO =
-  'https://vjs.zencdn.net/v/oceans.mp4';
 
-export interface YearChapterItem {
-  id: string;
+
+interface YearRowItemProps {
+  item: ChapterYearItem;
   chapterNumber: string;
-  title: string;
-  subtitle: string;
-  duration: string;
-  thumbnailUrl: string;
-  questionsCount: number;
+  onPress: (item: ChapterYearItem) => void;
+  onMorePress: (item: ChapterYearItem) => void;
 }
 
-// Preset playlist chapter datasets per subject
-const defaultPhysicsChapters: YearChapterItem[] = [
-  {
-    id: 'ch-1',
-    chapterNumber: '01',
-    title: 'Units, Dimensions & Errors',
-    subtitle: 'Dimensional analysis, significant figures & vernier calipers',
-    duration: '22:15',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 4,
-  },
-  {
-    id: 'ch-2',
-    chapterNumber: '02',
-    title: 'Kinematics & 2D Motion',
-    subtitle: '1D motion, projectile motion & relative velocity vectors',
-    duration: '31:40',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 5,
-  },
-  {
-    id: 'ch-3',
-    chapterNumber: '03',
-    title: 'Laws of Motion & Friction',
-    subtitle: 'Free body diagrams, static/kinetic friction & tension',
-    duration: '38:20',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1518152006812-edab29b069ac?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 6,
-  },
-  {
-    id: 'ch-4',
-    chapterNumber: '04',
-    title: 'Work, Energy & Power',
-    subtitle: 'Work-energy theorem, conservative forces & spring potential',
-    duration: '26:50',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 4,
-  },
-  {
-    id: 'ch-5',
-    chapterNumber: '05',
-    title: 'Rotational Motion & Dynamics',
-    subtitle: 'Moment of inertia, torque & angular momentum conservation',
-    duration: '44:10',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 7,
-  },
-  {
-    id: 'ch-6',
-    chapterNumber: '06',
-    title: 'Gravitation & Kepler Laws',
-    subtitle: 'Gravitational potential, escape velocity & orbital motion',
-    duration: '24:35',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 4,
-  },
-  {
-    id: 'ch-7',
-    chapterNumber: '07',
-    title: 'Thermodynamics & Heat Transfer',
-    subtitle: 'First law of thermodynamics, Carnot engine & heat conduction',
-    duration: '35:12',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 5,
-  },
-  {
-    id: 'ch-8',
-    chapterNumber: '08',
-    title: 'Wave Optics & Interference',
-    subtitle: 'Young double slit experiment, diffraction & polarization',
-    duration: '29:45',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 5,
-  },
-];
-
-const defaultChemistryChapters: YearChapterItem[] = [
-  {
-    id: 'chem-ch-1',
-    chapterNumber: '01',
-    title: 'Basic Concepts of Chemistry',
-    subtitle: 'Mole concept, stoichiometry & concentration units',
-    duration: '25:10',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 4,
-  },
-  {
-    id: 'chem-ch-2',
-    chapterNumber: '02',
-    title: 'Atomic Structure & Orbitals',
-    subtitle: 'Bohr model, quantum numbers & electronic configuration',
-    duration: '30:45',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 5,
-  },
-  {
-    id: 'chem-ch-3',
-    chapterNumber: '03',
-    title: 'Chemical Bonding & VSEPR',
-    subtitle: 'Hybridization, molecular orbital theory & bond polarity',
-    duration: '36:20',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 6,
-  },
-  {
-    id: 'chem-ch-4',
-    chapterNumber: '04',
-    title: 'Chemical Thermodynamics',
-    subtitle: 'First law, enthalpy, entropy & Gibbs free energy',
-    duration: '32:15',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 5,
-  },
-  {
-    id: 'chem-ch-5',
-    chapterNumber: '05',
-    title: 'Equilibrium & pH Calculations',
-    subtitle: 'Le Chatelier principle, ionic equilibrium & buffer systems',
-    duration: '39:50',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 7,
-  },
-  {
-    id: 'chem-ch-6',
-    chapterNumber: '06',
-    title: 'Coordination Chemistry',
-    subtitle: 'IUPAC naming, crystal field theory & isomerism',
-    duration: '28:30',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 5,
-  },
-];
-
-const defaultMathChapters: YearChapterItem[] = [
-  {
-    id: 'math-ch-1',
-    chapterNumber: '01',
-    title: 'Sets, Relations & Functions',
-    subtitle: 'Types of relations, domain, range & composite functions',
-    duration: '27:10',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1509228468518-180dd4864904?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 4,
-  },
-  {
-    id: 'math-ch-2',
-    chapterNumber: '02',
-    title: 'Matrices & Determinants',
-    subtitle: 'Properties of determinants, adjoint & matrix inversion',
-    duration: '34:25',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 5,
-  },
-  {
-    id: 'math-ch-3',
-    chapterNumber: '03',
-    title: 'Limits, Continuity & Differentiability',
-    subtitle: 'Standard limits, L’Hôpital rule & continuity proofs',
-    duration: '36:40',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 6,
-  },
-  {
-    id: 'math-ch-4',
-    chapterNumber: '04',
-    title: 'Definite Integrals & Areas',
-    subtitle: 'Definite integral properties & bounded curve area problems',
-    duration: '42:15',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1518152006812-edab29b069ac?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 7,
-  },
-  {
-    id: 'math-ch-5',
-    chapterNumber: '05',
-    title: 'Vectors & 3D Geometry',
-    subtitle: 'Dot product, cross product, line and plane equations',
-    duration: '38:50',
-    thumbnailUrl:
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop',
-    questionsCount: 6,
-  },
-];
-
-interface ChapterRowItemProps {
-  item: YearChapterItem;
-  onPress: (item: YearChapterItem) => void;
-  onMorePress: (item: YearChapterItem) => void;
-}
-
-function ChapterRowItem({ item, onPress, onMorePress }: ChapterRowItemProps) {
+function YearRowItem({
+  item,
+  onPress,
+  onMorePress,
+}: YearRowItemProps) {
   const theme = useTheme();
   const scale = useSharedValue(1);
 
@@ -267,7 +64,7 @@ function ChapterRowItem({ item, onPress, onMorePress }: ChapterRowItemProps) {
   return (
     <AnimatedPressable
       accessibilityRole="button"
-      accessibilityLabel={`Chapter ${item.chapterNumber}: ${item.title}`}
+      accessibilityLabel={`Year ${item.year}: ${item.title}`}
       onPress={() => onPress(item)}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
@@ -302,11 +99,11 @@ function ChapterRowItem({ item, onPress, onMorePress }: ChapterRowItemProps) {
         </View>
       </View>
 
-      {/* Chapter Information */}
+      {/* Year Information */}
       <View style={styles.chapterTextContent}>
         <View style={styles.chapterHeaderLine}>
           <Text style={[styles.chapterIndexBadge, { color: Palette.brand.primary }]}>
-            {`CH ${item.chapterNumber}`}
+            {`YEAR ${item.year}`}
           </Text>
           <Text style={[styles.questionsCountText, { color: theme.textSecondary }]}>
             {`${item.questionsCount} PYQs`}
@@ -338,37 +135,35 @@ function ChapterRowItem({ item, onPress, onMorePress }: ChapterRowItemProps) {
   );
 }
 
-export function YearPlaylistScreen({
+export function ChapterPlaylistScreen({
   route,
   navigation,
-}: YearPlaylistScreenProps) {
+}: ChapterPlaylistScreenProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
-  const year = route.params?.year ?? '2024';
+  const chapterNumber = route.params?.chapterNumber ?? '01';
   const subjectId = (route.params?.subjectId ?? 'physics').toLowerCase();
-  const title = route.params?.title ?? `${year} PYQ Solutions`;
+  const title = route.params?.title ?? `Chapter ${chapterNumber} Solutions`;
   const description =
     route.params?.description ??
-    `Comprehensive chapter-wise previous year question walkthroughs with step-by-step solutions for ${year}.`;
+    `Comprehensive year-wise previous year question walkthroughs with step-by-step solutions for Chapter ${chapterNumber}: ${title}.`;
   const imageUrl =
     route.params?.imageUrl ??
     'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1200&auto=format&fit=crop';
 
   const [isSaved, setIsSaved] = useState(false);
 
-  // Select chapter playlist dataset matching the subject
-  const chapters = useMemo(() => {
-    if (subjectId.includes('chem')) return defaultChemistryChapters;
-    if (subjectId.includes('math')) return defaultMathChapters;
-    return defaultPhysicsChapters;
-  }, [subjectId]);
+  // Generate the year list containing this specific chapter's solutions
+  const chapterYears = useMemo(() => {
+    return getChapterYears(chapterNumber, title);
+  }, [chapterNumber, title]);
 
   const handleSharePress = async () => {
     try {
       await Share.share({
         title: `${title} Playlist`,
-        message: `Watch ${title} - ${description} on Gyanoda!`,
+        message: `Watch Chapter ${chapterNumber} (${title}) Year-wise solutions on Gyanoda!`,
       });
     } catch {
       // User dismissed share
@@ -376,25 +171,26 @@ export function YearPlaylistScreen({
   };
 
   const playerPlaylist: PlayerPlaylistItem[] = useMemo(() => {
-    return chapters.map((c) => ({
-      id: c.id,
-      chapterNumber: c.chapterNumber,
-      title: c.title,
-      subtitle: c.subtitle,
-      duration: c.duration,
-      thumbnailUrl: c.thumbnailUrl,
+    return chapterYears.map((y) => ({
+      id: y.id,
+      chapterNumber,
+      year: y.year,
+      title: y.title,
+      subtitle: `CH ${chapterNumber} • ${y.subtitle}`,
+      duration: y.duration,
+      thumbnailUrl: y.thumbnailUrl ?? 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=800&auto=format&fit=crop',
       videoUrl: DEFAULT_SAMPLE_VIDEO,
-      questionText: `Chapter ${c.chapterNumber}: ${c.title}. Focus on ${c.subtitle}. Solve previous year questions step by step.`,
-      answerText: `Key Concepts & Derivations:\n\n1. Foundational Theory for ${c.title}:\n   Review core equations and conceptual fundamentals.\n\n2. Analytical Steps:\n   Follow step-by-step mathematical reasoning demonstrated in the player above.\n\n3. High-Yield Examination Tips:\n   Common error patterns and time-saving calculation shortcuts.`,
+      questionText: y.questionText,
+      answerText: y.answerText,
     }));
-  }, [chapters]);
+  }, [chapterYears, chapterNumber]);
 
   const handlePlayAll = () => {
     navigation.navigate('Player', {
       videoId: playerPlaylist[0]?.id,
       initialIndex: 0,
       playlist: playerPlaylist,
-      year,
+      year: chapterYears[0]?.year,
       subjectId,
       title: playerPlaylist[0]?.title,
     });
@@ -402,11 +198,12 @@ export function YearPlaylistScreen({
 
   const handleShuffle = () => {
     const shuffled = [...playerPlaylist].sort(() => Math.random() - 0.5);
+    const firstYear = chapterYears.find((cy) => cy.id === shuffled[0]?.id)?.year;
     navigation.navigate('Player', {
       videoId: shuffled[0]?.id,
       initialIndex: 0,
       playlist: shuffled,
-      year,
+      year: firstYear,
       subjectId,
       title: shuffled[0]?.title,
     });
@@ -424,28 +221,28 @@ export function YearPlaylistScreen({
     });
   };
 
-  const handleChapterPress = (item: YearChapterItem, index: number) => {
+  const handleYearPress = (item: ChapterYearItem, index: number) => {
     navigation.navigate('Player', {
       videoId: item.id,
       initialIndex: index,
       playlist: playerPlaylist,
-      year,
+      year: item.year,
       subjectId,
       title: item.title,
     });
   };
 
-  const handleChapterMore = (item: YearChapterItem, index: number) => {
+  const handleYearMore = (item: ChapterYearItem, index: number) => {
     customAlert.show({
-      title: item.title,
-      message: `Chapter ${item.chapterNumber} • ${item.duration} • ${item.questionsCount} Questions.\n\nKey topics: ${item.subtitle}`,
+      title: `${item.year} Solutions`,
+      message: `Chapter ${chapterNumber}: ${title}\nYear ${item.year} • ${item.duration} • ${item.questionsCount} Questions.\n\n${item.subtitle}`,
       type: 'confirm',
       buttons: [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Play Video',
           style: 'primary',
-          onPress: () => handleChapterPress(item, index),
+          onPress: () => handleYearPress(item, index),
         },
       ],
     });
@@ -454,7 +251,7 @@ export function YearPlaylistScreen({
   return (
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <FlatList
-        data={chapters}
+        data={chapterYears}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
@@ -486,7 +283,7 @@ export function YearPlaylistScreen({
                   pointerEvents="none"
                 />
 
-                {/* Banner Content: Subject Pill, Title, Description */}
+                {/* Banner Content: Subject Pill, Chapter Title, Description */}
                 <View style={styles.bannerContent}>
                   <View style={styles.subjectPill}>
                     <SolarIcon
@@ -496,7 +293,7 @@ export function YearPlaylistScreen({
                       color="#ffffff"
                     />
                     <Text style={styles.subjectPillText}>
-                      {`${subjectId.toUpperCase()} • ${year}`}
+                      {`${subjectId.toUpperCase()} • CHAPTER ${chapterNumber}`}
                     </Text>
                   </View>
 
@@ -514,7 +311,7 @@ export function YearPlaylistScreen({
                   {/* Circular Shuffle Button */}
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Shuffle all videos"
+                    accessibilityLabel="Shuffle all years"
                     onPress={handleShuffle}
                     style={({ pressed }) => [
                       styles.bannerShuffleButton,
@@ -531,7 +328,7 @@ export function YearPlaylistScreen({
                   {/* Circular Orange Play All Button (plays 1st video one by one) */}
                   <Pressable
                     accessibilityRole="button"
-                    accessibilityLabel="Play all videos from 1st video"
+                    accessibilityLabel="Play all year solutions from 1st video"
                     onPress={handlePlayAll}
                     style={({ pressed }) => [
                       styles.bannerPlayButton,
@@ -605,10 +402,10 @@ export function YearPlaylistScreen({
               </View>
             </View>
 
-            {/* Padded Chapters Header Row (No blue/white play buttons) */}
+            {/* Padded Years Header Row */}
             <View style={styles.sectionHeaderRow}>
               <View style={styles.sectionHeaderLeft}>
-                <ThemedText style={styles.sectionTitle}>Chapters</ThemedText>
+                <ThemedText style={styles.sectionTitle}>Years</ThemedText>
                 <View
                   style={[
                     styles.countBadge,
@@ -619,7 +416,7 @@ export function YearPlaylistScreen({
                       styles.countBadgeText,
                       { color: theme.textSecondary },
                     ]}>
-                    {`${chapters.length} Videos`}
+                    {`${chapterYears.length} Videos`}
                   </Text>
                 </View>
               </View>
@@ -629,16 +426,17 @@ export function YearPlaylistScreen({
                   styles.totalDurationText,
                   { color: theme.textSecondary },
                 ]}>
-                Past Paper PYQ Solutions
+                Year-wise PYQ Solutions
               </Text>
             </View>
           </View>
         }
         renderItem={({ item, index }) => (
-          <ChapterRowItem
+          <YearRowItem
             item={item}
-            onPress={() => handleChapterPress(item, index)}
-            onMorePress={() => handleChapterMore(item, index)}
+            chapterNumber={chapterNumber}
+            onPress={() => handleYearPress(item, index)}
+            onMorePress={() => handleYearMore(item, index)}
           />
         )}
       />
@@ -951,4 +749,3 @@ const styles = StyleSheet.create({
     opacity: 0.75,
   },
 });
-

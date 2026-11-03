@@ -7,3 +7,6 @@ export * from './subjects';
 export * from './recently-watched';
 export * from './wallet';
 export * from './courses';
+export * from './course-access';
+export * from './course-playlists';
+export * from './auth';

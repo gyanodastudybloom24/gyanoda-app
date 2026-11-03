@@ -8,3 +8,4 @@ export * from './subjects';
 export * from './recently-watched';
 export * from './wallet';
 export * from './courses';
+export * from './auth';
