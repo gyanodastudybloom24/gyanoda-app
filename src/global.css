@@ -1,6 +1,18 @@
 :root {
+  --color-brand: #3880ff;
+  --color-brand-light: #5190ff;
+  --color-accent: #fc8019;
+  --color-secondary: #fc8019;
+  --color-background: #ffffff;
+  --color-foreground: #282c3f;
+  --color-muted: #686b78;
+  --color-border: #e9e9eb;
+  --color-card: #ffffff;
+  --color-dark-background: #121212;
+  --color-dark-foreground: #e9e9eb;
+
   --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
+    'Basis Grotesque Pro', system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
     Segoe UI Symbol, Noto Color Emoji;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
